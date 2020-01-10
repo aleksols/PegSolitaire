@@ -4,8 +4,14 @@ from cell import Cell
 
 class Triangle(Board):
 
-    def __init__(self, size):
+    def __init__(self, size, empty_indices=None):
         super().__init__(size)
+        self.cells = None
+        self.init_cells()
+        if empty_indices is not None:
+            self.set_empty(empty_indices)
+
+    def init_cells(self):
         self.cells = [[Cell(1)]]  # First cell
         counter = 2
         for row in range(1, self.size):
@@ -13,7 +19,9 @@ class Triangle(Board):
             for column in range(0, row + 1):
                 x_pos = column
                 y_pos = -row
-                cell = Cell(counter, pos=(x_pos, y_pos))
+                x = x_pos - row * 0.5
+                y = y_pos
+                cell = Cell(counter, pos=(x, y))
 
                 column_start = max(column - 1, 0)
                 column_end = column + 1
@@ -27,10 +35,15 @@ class Triangle(Board):
                 counter += 1
 
             self.cells.append(new_cells)
-        self.printable_cells = []
+
+    def set_empty(self, indices):
+        if not isinstance(indices, list):
+            indices = [indices]
         for row in self.cells:
             for cell in row:
-                self.printable_cells.append(cell)
+                if cell.index in indices:
+                    cell.filled = False
+
 
 if __name__ == '__main__':
     t = Triangle(8)

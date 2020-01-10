@@ -13,6 +13,12 @@ class Cell:
             self.neighbours.append(cell)
             cell.neighbours.append(self)
 
+    @property
+    def color(self):
+        if self.filled:
+            return "brown"
+        return "white"
+
     def __hash__(self):
         return self.index
 
