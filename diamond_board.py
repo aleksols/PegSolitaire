@@ -1,15 +1,16 @@
+import math
+
 from board import Board
 from cell import Cell
-import math
+
 
 class Diamond(Board):
 
-    def __init__(self, size, empty_indices=None):
+    def __init__(self, size, empty_indices=1):
         super().__init__(size)
         self.cells = None
         self.init_cells()
-        if empty_indices is not None:
-            self.set_empty(empty_indices)
+        self.set_empty(empty_indices, initial=True)
 
     def init_cells(self):
         self.cells = []  # First cell
@@ -48,4 +49,3 @@ if __name__ == '__main__':
     for i in t.cells:
         for j in i:
             print(f"Neighbours for {j}:", j.neighbours)
-

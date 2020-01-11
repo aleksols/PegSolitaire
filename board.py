@@ -15,10 +15,12 @@ class Board:
                 finished.append(cell)
         return pairs
 
-    def set_empty(self, indices):
+    def set_empty(self, indices, initial=False):
         if not isinstance(indices, list):
             indices = [indices]
         for row in self.cells:
             for cell in row:
                 if cell.index in indices:
                     cell.filled = False
+                    if initial:
+                        cell.initial_empty = True

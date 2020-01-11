@@ -6,6 +6,9 @@ class Cell:
         self.index = index
         self.pos = pos
 
+        self.targeted = False
+        self.initial_empty = False
+
     def add_neighbour(self, *args):
         for cell in args:
             if cell in self.neighbours:
@@ -15,6 +18,8 @@ class Cell:
 
     @property
     def color(self):
+        if not self.filled and self.initial_empty:
+            return "lightgreen"
         if self.filled:
             return "brown"
         return "white"
