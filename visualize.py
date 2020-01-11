@@ -3,27 +3,27 @@ import random
 import matplotlib
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-import networkx as nx
 
 from diamond_board import Diamond
-from triangle_board import Triangle
+from pivotals import BOARD, BOARD_SIZE, EMPTY_CELLS
 
 matplotlib.use("TkAgg")
 
-G = nx.Graph()
 
-empty = [5]
-board = Triangle(8, empty_indices=empty)
+board = BOARD(BOARD_SIZE, empty_indices=EMPTY_CELLS)
+
+empty = list(EMPTY_CELLS)
 
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(1, 1, 1)
-ax.axes.get_xaxis().set_visible(True)
-ax.axes.get_yaxis().set_visible(True)
+ax.axes.get_xaxis().set_visible(False)
+ax.axes.get_yaxis().set_visible(False)
 
 y_max = 0.5
-y_min = -((board.size - 1) * 2**0.5 + 0.5)
-x_max = ((board.size - 1) * 2**0.5) / 2 + 0.5
-x_min = -((board.size - 1) * 2**0.5) / 2 - 0.5
+y_min = -((board.size - 1) * 2 ** 0.5 + 0.5)
+x_max = ((board.size - 1) * 2 ** 0.5) / 2 + 0.5
+x_min = -((board.size - 1) * 2 ** 0.5) / 2 - 0.5
+
 
 def animate(i):
     ax.clear()
@@ -56,7 +56,7 @@ def animate(i):
                     zorder=2
                 )
             )
-            plt.text(x=cell.pos[0], y=cell.pos[1], s=cell.index, fontsize=12)
+            # plt.text(x=cell.pos[0], y=cell.pos[1], s=cell.index, fontsize=12)
 
 
 ani = animation.FuncAnimation(fig, animate, interval=1000, blit=False)
