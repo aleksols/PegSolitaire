@@ -60,8 +60,4 @@ def animate(i):
 ani = animation.FuncAnimation(fig, animate, interval=FRAME_DELAY, blit=False)
 plt.show()
 
-# fig.canvas.draw()
-# plt.title("Test")
-# fig.canvas.draw()
-#
-# print(ax.patches)
+
