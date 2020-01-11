@@ -4,11 +4,9 @@ import matplotlib
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
-from diamond_board import Diamond
-from pivotals import BOARD, BOARD_SIZE, EMPTY_CELLS
+from pivotals import BOARD, BOARD_SIZE, EMPTY_CELLS, FRAME_DELAY
 
 matplotlib.use("TkAgg")
-
 
 board = BOARD(BOARD_SIZE, empty_indices=EMPTY_CELLS)
 
@@ -59,7 +57,7 @@ def animate(i):
             # plt.text(x=cell.pos[0], y=cell.pos[1], s=cell.index, fontsize=12)
 
 
-ani = animation.FuncAnimation(fig, animate, interval=1000, blit=False)
+ani = animation.FuncAnimation(fig, animate, interval=FRAME_DELAY, blit=False)
 plt.show()
 
 # fig.canvas.draw()
