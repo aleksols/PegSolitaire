@@ -14,3 +14,11 @@ class Board:
                     pairs.append((cell, neighbour))
                 finished.append(cell)
         return pairs
+
+    def set_empty(self, indices):
+        if not isinstance(indices, list):
+            indices = [indices]
+        for row in self.cells:
+            for cell in row:
+                if cell.index in indices:
+                    cell.filled = False

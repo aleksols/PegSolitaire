@@ -39,14 +39,6 @@ class Diamond(Board):
 
             self.cells.append(new_cells)
 
-    def set_empty(self, indices):
-        if not isinstance(indices, list):
-            indices = [indices]
-        for row in self.cells:
-            for cell in row:
-                if cell.index in indices:
-                    cell.filled = False
-
 
 if __name__ == '__main__':
     t = Diamond(4)
