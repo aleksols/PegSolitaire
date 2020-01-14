@@ -25,7 +25,7 @@ class Diamond(Board):
                 y_pos = -row
                 x = x_pos * math.cos(angle) - y_pos * math.sin(angle)
                 y = x_pos * math.sin(angle) + y_pos * math.cos(angle)
-                cell = Cell(counter, pos=(x, y))
+                cell = Cell(counter, pos=(x, y), row=row, column=column)
 
                 left_neighbour = new_cells[-1:]
                 top_neighbours = []
@@ -40,12 +40,34 @@ class Diamond(Board):
 
             self.cells.append(new_cells)
 
+    def valid_actions(self):
+        actions = []
+        for row in self.cells:
+            for cell in row:
+                if not cell.filled:
+                    continue
+                for neighbour in cell.neighbours:
+                    if not neighbour.filled:
+                        continue
+                    delta_row = neighbour.row - cell.row
+                    delta_column = neighbour.column - cell.column
+                    if abs(delta_column + delta_row) == 2:
+                        continue
+                    target_row = neighbour.row + delta_row
+                    target_column = neighbour.column + delta_column
+                    legal_row = 0 <= target_row < self.size
+                    legal_column = 0 <= target_column < self.size
+                    if legal_row and legal_column:
+                        target_cell = self.cells[target_row][target_column]
+                        if not target_cell.filled:
+                            actions.append((cell, neighbour, target_cell))
+        return actions
+
 
 if __name__ == '__main__':
-    t = Diamond(4)
-    for i in t.cells:
-        print(i)
+    t = Diamond(4, empty_indices=[6])
+    for line in t.state:
+        print(line)
+    actions = t.valid_actions()
+    print(actions[0])
 
-    for i in t.cells:
-        for j in i:
-            print(f"Neighbours for {j}:", j.neighbours)

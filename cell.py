@@ -1,12 +1,16 @@
 class Cell:
 
-    def __init__(self, index, pos=(0, 0)):
+    def __init__(self, index, pos=(0, 0), row=0, column=0):
         self.neighbours = []
-        self.filled = True
         self.index = index
         self.pos = pos
+        self.row = row
+        self.column = column
 
+
+        self.filled = True
         self.targeted = False
+        self.jumped = False
         self.initial_empty = False
 
     def add_neighbour(self, *args):
@@ -18,6 +22,10 @@ class Cell:
 
     @property
     def color(self):
+        if self.targeted:
+            return "blue"
+        if self.jumped:
+            return "red"
         if not self.filled and self.initial_empty:
             return "lightgreen"
         if self.filled:

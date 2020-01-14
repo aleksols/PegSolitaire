@@ -21,7 +21,7 @@ class Triangle(Board):
                 y_pos = -row
                 x = x_pos - row * 0.5
                 y = y_pos
-                cell = Cell(counter, pos=(x, y))
+                cell = Cell(counter, pos=(x, y), row=row, column=column)
 
                 column_start = max(column - 1, 0)
                 column_end = column + 1
@@ -36,15 +36,43 @@ class Triangle(Board):
 
             self.cells.append(new_cells)
 
+    def valid_actions(self):
+        actions = []
+        for row in self.cells:
+            for cell in row:
+                if not cell.filled:
+                    continue
+                for neighbour in cell.neighbours:
+                    if not neighbour.filled:
+                        continue
+                    delta_row = neighbour.row - cell.row
+                    delta_column = neighbour.column - cell.column
 
+                    print("Cells", cell, neighbour)
+                    print("Deltas", delta_row, delta_column)
+                    print()
+                    if abs(delta_column + delta_row) == 0:
+                        continue
+
+                    target_row = neighbour.row + delta_row
+                    target_column = neighbour.column + delta_column
+
+                    legal_row = 0 <= target_row < self.size
+                    if not legal_row:
+                        continue
+
+                    legal_column = 0 <= target_column < len(self.cells[target_row])
+                    if not legal_column:
+                        continue
+
+                    target_cell = self.cells[target_row][target_column]
+                    if not target_cell.filled:
+                        actions.append((cell, neighbour, target_cell))
+        return actions
 
 
 if __name__ == '__main__':
-    t = Triangle(8)
-    for i in t.cells:
-        print(i)
+    t = Triangle(4, empty_indices=[6])
+    print(t.valid_actions())
 
-    for i in t.cells:
-        for j in i:
-            print(f"Neighbours for {j}:", j.neighbours)
 #

@@ -1,9 +1,9 @@
 from diamond_board import Diamond
 from triangle_board import Triangle
 
-BOARD = Diamond
-BOARD_SIZE = 8
-EMPTY_CELLS = [5]
+BOARD = Triangle
+BOARD_SIZE = 4
+EMPTY_CELLS = [6]
 EPISODES = 1
 LOOKUP_OR_NEURAL = None
 NN_DIMENSIONS = [1]

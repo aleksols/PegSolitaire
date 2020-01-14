@@ -3,7 +3,7 @@ import random
 import matplotlib
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-
+import time
 from pivotals import BOARD, BOARD_SIZE, EMPTY_CELLS, FRAME_DELAY
 
 matplotlib.use("TkAgg")
@@ -24,13 +24,16 @@ x_min = -((board.size - 1) * 2 ** 0.5) / 2 - 0.5
 
 
 def animate(i):
-    ax.clear()
+    actions = board.valid_actions()
+   
+    if len(actions) == 0:
+        return
+    if i % 2:
+        board.apply_aciton(actions[0])
+    else:
+        board.visualize_action(actions[0])
 
-    index = random.randint(1, 16)
-    while index in empty and len(empty) < 16:
-        index = random.randint(1, 16)
-    empty.append(index)
-    board.set_empty(empty)
+    ax.clear()
     plt.ylim(y_min, y_max)
     plt.xlim(x_min, x_max)
     # plt.axis("scaled")
@@ -54,7 +57,7 @@ def animate(i):
                     zorder=2
                 )
             )
-            # plt.text(x=cell.pos[0], y=cell.pos[1], s=cell.index, fontsize=12)
+            plt.text(x=cell.pos[0], y=cell.pos[1], s=cell.index, fontsize=12)
 
 
 ani = animation.FuncAnimation(fig, animate, interval=FRAME_DELAY, blit=False)
