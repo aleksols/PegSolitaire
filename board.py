@@ -62,10 +62,15 @@ class Board:
     @property
     def reward(self):
         if sum(self.state) == 1:
+            # print("win")
             return 1
         else:
-            # return 0
-            return 1 / sum(self.state) ** 10
+            return 0
+            #
+            # if self.finished:
+            #     return -sum(self.state)
+            # return 1 / sum(self.state)
+            # return 1 / sum(self.state)
         # return 1 / sum(self.state)
 
     def visualize_action(self, action):

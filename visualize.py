@@ -13,19 +13,23 @@ actor = Actor()
 critic = Critic()
 agent = ActorCriticAgent(actor, critic)
 
-agent.play_many(EPISODES_BEFORE_VISUALIZATION)
-
+rewards, results, _ = agent.play_many(EPISODES_BEFORE_VISUALIZATION)
+# print(len(actor.state_mapping.keys()))
+print(actor.epsilon)
 actor.epsilon = 0
-num_pegs, actions = agent.play_many(1)
+reward, num_pegs, actions = agent.play_many(1)
 
 
 board = agent.environment
 
-fig = plt.figure(figsize=(10, 10))
-ax = fig.add_subplot(1, 1, 1)
-ax.axes.get_xaxis().set_visible(False)
-ax.axes.get_yaxis().set_visible(False)
+# fig = plt.figure(figsize=(10, 10))
+# fig.figsize = (100, 100)
+fig, (board_ax, graph_ax) = plt.subplots(1, 2)
+fig.set_size_inches(12, 6)
 
+graph_ax.plot(results)
+board_ax.axes.get_xaxis().set_visible(True)
+board_ax.axes.get_yaxis().set_visible(True)
 y_max = 0.5
 y_min = -((board.size - 1) * 2 ** 0.5 + 0.5)
 x_max = ((board.size - 1) * 2 ** 0.5) / 2 + 0.5
@@ -41,9 +45,9 @@ def animate(i):
     else:
         board.visualize_action(actions[-1][i // 2])
 
-    ax.clear()
-    plt.ylim(y_min, y_max)
-    plt.xlim(x_min, x_max)
+    board_ax.clear()
+    board_ax.set_ylim(y_min, y_max)
+    board_ax.set_xlim(x_min, x_max)
     # plt.axis("scaled")
     edges = board.get_neighbour_pairs()
     for edge in edges:
@@ -51,11 +55,10 @@ def animate(i):
         y_start = edge[0].pos[1]
         x_end = edge[1].pos[0]
         y_end = edge[1].pos[1]
-        plt.plot([x_start, x_end], [y_start, y_end], "k-", zorder=1)  # Draw black lines between cells
+        board_ax.plot([x_start, x_end], [y_start, y_end], "k-", zorder=1)  # Draw black lines between cells
     for row in board.cells:
         for cell in row:
-            # plt.Circle(cell.pos, radius=0.45, color=brown)
-            ax.add_patch(
+            board_ax.add_patch(
                 matplotlib.patches.Circle(
                     xy=cell.pos,
                     radius=0.45,
@@ -65,7 +68,7 @@ def animate(i):
                     zorder=2
                 )
             )
-            plt.text(x=cell.pos[0], y=cell.pos[1], s=cell.index, fontsize=12)
+            board_ax.text(x=cell.pos[0], y=cell.pos[1], s=cell.index, fontsize=12)
 
 
 ani = animation.FuncAnimation(fig, animate, interval=FRAME_DELAY, blit=False)
