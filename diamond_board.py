@@ -6,8 +6,8 @@ from cell import Cell
 
 class Diamond(Board):
 
-    def __init__(self, size, empty_indices=1):
-        super().__init__(size)
+    def __init__(self, size, empty_indices):
+        super().__init__(size,  empty_indices)
         self.cells = None
         self.init_cells()
         self.set_empty(empty_indices, initial=True)
@@ -40,6 +40,7 @@ class Diamond(Board):
 
             self.cells.append(new_cells)
 
+    @property
     def valid_actions(self):
         actions = []
         for row in self.cells:
@@ -66,8 +67,12 @@ class Diamond(Board):
 
 if __name__ == '__main__':
     t = Diamond(4, empty_indices=[6])
-    for line in t.state:
-        print(line)
-    actions = t.valid_actions()
-    print(actions[0])
+
+    actions = t.valid_actions
+    print(actions)
+    t = Diamond(4, empty_indices=[7])
+
+    actions = t.valid_actions
+    print(actions)
+
 

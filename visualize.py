@@ -1,16 +1,25 @@
-import random
-
 import matplotlib
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-import time
-from pivotals import BOARD, BOARD_SIZE, EMPTY_CELLS, FRAME_DELAY
+
+from actor import Actor
+from actor_critic_agent import ActorCriticAgent
+from critic import Critic
+from pivotals import BOARD, BOARD_SIZE, EMPTY_CELLS, FRAME_DELAY, EPISODES_BEFORE_VISUALIZATION
 
 matplotlib.use("TkAgg")
 
-board = BOARD(BOARD_SIZE, empty_indices=EMPTY_CELLS)
+actor = Actor()
+critic = Critic()
+agent = ActorCriticAgent(actor, critic)
 
-empty = list(EMPTY_CELLS)
+agent.play_many(EPISODES_BEFORE_VISUALIZATION)
+
+actor.epsilon = 0
+num_pegs, actions = agent.play_many(1)
+
+
+board = agent.environment
 
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(1, 1, 1)
@@ -24,14 +33,13 @@ x_min = -((board.size - 1) * 2 ** 0.5) / 2 - 0.5
 
 
 def animate(i):
-    actions = board.valid_actions()
-   
-    if len(actions) == 0:
+    # print(actions[-1])
+    if i > 2 * len(actions[-1]) - 1:
         return
     if i % 2:
-        board.apply_aciton(actions[0])
+        board.apply_action(actions[-1][i // 2])
     else:
-        board.visualize_action(actions[0])
+        board.visualize_action(actions[-1][i // 2])
 
     ax.clear()
     plt.ylim(y_min, y_max)
@@ -62,5 +70,3 @@ def animate(i):
 
 ani = animation.FuncAnimation(fig, animate, interval=FRAME_DELAY, blit=False)
 plt.show()
-
-

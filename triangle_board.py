@@ -4,12 +4,11 @@ from cell import Cell
 
 class Triangle(Board):
 
-    def __init__(self, size, empty_indices=None):
-        super().__init__(size)
+    def __init__(self, size, empty_indices=1):
+        super().__init__(size,  empty_indices)
         self.cells = None
         self.init_cells()
-        if empty_indices is not None:
-            self.set_empty(empty_indices)
+        self.set_empty(empty_indices, initial=True)
 
     def init_cells(self):
         self.cells = [[Cell(1)]]  # First cell
@@ -36,6 +35,7 @@ class Triangle(Board):
 
             self.cells.append(new_cells)
 
+    @property
     def valid_actions(self):
         actions = []
         for row in self.cells:
@@ -48,9 +48,6 @@ class Triangle(Board):
                     delta_row = neighbour.row - cell.row
                     delta_column = neighbour.column - cell.column
 
-                    print("Cells", cell, neighbour)
-                    print("Deltas", delta_row, delta_column)
-                    print()
                     if abs(delta_column + delta_row) == 0:
                         continue
 
