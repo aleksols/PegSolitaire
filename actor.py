@@ -57,6 +57,8 @@ class Actor:
 
     def add_actions(self, state, args):
         if not args:
+            return
+            print("Wrong")
             self.state_mapping[state] = {}
         for action in args:
             if state not in self.state_mapping.keys():
@@ -66,6 +68,8 @@ class Actor:
 
 
     def action(self, state):
+        if state not in self.state_mapping.keys():
+            return None
 
         action_func = self._choose_best
         r = random.random()
@@ -75,13 +79,13 @@ class Actor:
 
     def _choose_random(self, state):
         # TODO use distributions
-        self._distribution(state)
+        # self._distribution(state)
         if not self.state_mapping[state]:
             return None
         return random.choice(list(self.state_mapping[state].keys()))[1]
 
     def _choose_best(self, state):
-        self._distribution(state)
+        # self._distribution(state)
         max_action = [None]
         max_value = float("-inf")
         for state, action in self.state_mapping[state].keys():
