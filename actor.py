@@ -27,7 +27,7 @@ class Actor:
         self.eligibilities[(state, action)] = self.e(state, action) + 1
 
     def update_eligibility(self, state, action):
-        self.eligibilities[(state, action)] = DISCOUNT_FACTOR_ACTOR * ELIGIBILITY_DECAY_ACTOR *  self.e(state, action)
+        self.eligibilities[(state, action)] = DISCOUNT_FACTOR_ACTOR * ELIGIBILITY_DECAY_ACTOR * self.e(state, action)
 
     def set_elgibility(self, state, action, value):
         self.eligibilities[(state, action)] = value
