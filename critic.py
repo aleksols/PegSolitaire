@@ -7,7 +7,7 @@ class Critic:
     def __init__(self):
         self.state_mapping = {}
         self.eligibilities = {}
-        self.random_init = random.uniform(0, 0.005)
+        self.random_init = 0.005
         self.delta = 0
 
     def V(self, state):
