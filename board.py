@@ -45,6 +45,7 @@ class Board:
         #     print("None", action)
         #     return
         if action is None:
+            print("None")
             return
 
         action[0].filled = False
@@ -55,27 +56,28 @@ class Board:
 
         return self.reward, self.state, self.finished
 
+
+    def visualize_action(self, action):
+        action[0].targeted = True
+        action[1].jumped = True
+
+
     @property
     def finished(self):
         return len(self.valid_actions) == 0
 
     @property
     def reward(self):
-        if sum(self.state) == 1:
-            # print("win")
-            return 1
-        else:
+        # if self.finished and sum(self.state) != 1:
+        #     return 1
+        # # elif self.finished:
+        # #     return 10
+        # return 1
+        if sum(self.state) != 1:
             return 0
-            #
-            # if self.finished:
-            #     return -sum(self.state)
-            # return 1 / sum(self.state)
-            # return 1 / sum(self.state)
-        # return 1 / sum(self.state)
+        return 1
 
-    def visualize_action(self, action):
-        action[0].targeted = True
-        action[1].jumped = True
+
 
     @property
     def state(self):
