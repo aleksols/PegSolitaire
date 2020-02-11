@@ -15,10 +15,12 @@ class ActorCriticAgent(Agent):
         finished = False
         G = 0
         state_action_sequence = []
+        self.actor.eligibilities.clear()
 
         state = self.environment.state
         self.actor.add_actions(state, self.environment.valid_actions)
         action = self.actor.action(state)
+        self.actor.set_elgibility(state, action, 1)
         if action is None:
             finished = True
         while not finished:
@@ -32,7 +34,7 @@ class ActorCriticAgent(Agent):
             self.critic.update_delta(reward, state, new_state)
             self.critic.set_eligibility(state, 1)
 
-            for s, a in reversed(state_action_sequence):
+            for s, a in state_action_sequence:
                 self.critic.update_value(s)
 
                 self.critic.update_eligibility(s)
@@ -51,6 +53,7 @@ class ActorCriticAgent(Agent):
         results = []
         action_sequence = []
         rewards = []
+
         for _ in tqdm(range(num_games)):
             reward, num_pegs, sequence = self.play_game()
             self.actor.update_epsilon()
@@ -86,17 +89,47 @@ if __name__ == '__main__':
             else:
                 value_count[v] = 1
             counter += 1
-    print(counter)
-    print(max(value_count.keys()))
+    # print(counter)
+    # print(max(value_count.keys()))
     # actor.epsilon = 0
     # s = agent.play_many(100, debug=True)
     # fi
     # plt.plot(list(value_count.keys()),list(value_count.values()))
     fig, (ax1, ax2) = plt.subplots(2, 1)
+    averages = []
+    acc = 0
+    for i, elem in enumerate(num_pegs, 1):
+        acc += elem
+        averages.append(acc / i)
     ax1.plot(num_pegs)
+    ax1.plot(averages)
+    ax1.plot(actor.epsilon_sequence)
     ax2.plot(rewards)
     plt.show()
-    print(critic.state_mapping)
-    print(critic.eligibilities)
-    print(actor.state_mapping)
+    # for (cstate, cvalue), (astate, avalue) in zip(critic.state_mapping.items(), actor.state_mapping.items()):
+    #     print("    ", cstate[:1], "     ")
+    #     print("   ", cstate[1:3]), "    "
+    #     print("  ", cstate[3:6], "    ", cvalue)
+    #     print(" ", cstate[6:10])
+    #     print("", cstate[10:15])
+    #
+
+    for state, mapping in actor.state_mapping.items():
+        print("\nNew state")
+        print(state)
+        for (s, a), value in mapping.items():
+            print("Action:", a)
+            print("    ", state[:1], "     ")
+            print("   ", state[1:3]), "    "
+            print("  ", state[3:6], "    ", value)
+            print(" ", state[6:10])
+            print("", state[10:15])
+    print("\nEligibilities")
+    for state, value in critic.eligibilities.items():
+        print("    ", state[:1])
+        print("   ", state[1:3])
+        print("  ", state[3:6], "    ", value)
+        print(" ", state[6:10])
+        print("", state[10:15])
+    # print(actor.state_mapping)
     print(actor.eligibilities)
