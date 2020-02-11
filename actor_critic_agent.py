@@ -29,8 +29,7 @@ class ActorCriticAgent(Agent):
             G += reward
             self.actor.add_actions(new_state, self.environment.valid_actions)
 
-            if not finished:  # Finished states are never in the actors mapping tables
-                next_action = self.actor.action(new_state)
+            next_action = self.actor.action(new_state)
 
             self.actor.set_elgibility(state, action, 1)
 
