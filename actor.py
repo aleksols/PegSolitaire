@@ -13,6 +13,7 @@ class Actor:
         self.state_mapping = {}
         self.eligibilities = {}
         self.epsilon = INITIAL_EPSILON
+        self.epsilon_sequence = [self.epsilon]
 
     def e(self, state, action):
         if (state, action) not in self.eligibilities.keys():
@@ -98,6 +99,7 @@ class Actor:
 
     def update_epsilon(self):
         self.epsilon *= EPSILON_DECAY_RATE
+        self.epsilon_sequence.append(self.epsilon)
 
 if __name__ == '__main__':
     a = Actor()
