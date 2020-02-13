@@ -68,14 +68,14 @@ class Board:
 
     @property
     def reward(self):
-        # if self.finished and sum(self.state) != 1:
-        #     return 1
-        # # elif self.finished:
-        # #     return 10
+        if self.finished and sum(self.state) != 1:
+            return -1
+        elif self.finished:
+            return 1
+        return 0
+        # if sum(self.state) != 1:
+        #     return 0
         # return 1
-        if sum(self.state) != 1:
-            return 0
-        return 1
 
 
 
