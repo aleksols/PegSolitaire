@@ -34,6 +34,15 @@ class Actor:
 
     def update_policy(self, state, action, td_error):
         self.state_mapping[state][(state, action)] += LEARN_RATE_ACTOR * td_error * self.e(state, action)
+        self.normalize(state)
+
+    def normalize(self, state):
+        divider = sum([math.e ** v for v in self.state_mapping[state].values()])
+        for (s, a), v in self.state_mapping[state].items():
+            self.state_mapping[state][(s, a)] = math.e**v / divider
+            # print(self.state_mapping[state][(s, a)])
+        # print(sum(self.state_mapping[state].values()))
+
 
 
     def _distribution(self, state):
@@ -58,8 +67,6 @@ class Actor:
     def add_actions(self, state, args):
         if not args:
             return
-            print("Wrong")
-            self.state_mapping[state] = {}
         for action in args:
             if state not in self.state_mapping.keys():
                 self.state_mapping[state] = {(state, action): 0}
