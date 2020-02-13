@@ -20,7 +20,6 @@ class ActorCriticAgent(Agent):
         state = self.environment.state
         self.actor.add_actions(state, self.environment.valid_actions)
         action = self.actor.action(state)
-        # self.actor.set_elgibility(state, action, 1)
         if action is None:
             finished = True
         while not finished:
