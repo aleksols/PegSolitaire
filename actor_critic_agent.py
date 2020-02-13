@@ -1,7 +1,7 @@
 from tqdm import tqdm
 
 from agent import Agent
-from pivotals import BOARD_SIZE, EMPTY_CELLS, BOARD, EPISODES
+from pivotals import BOARD_SIZE, EMPTY_CELLS, BOARD, EPISODES, USE_NN
 
 
 class ActorCriticAgent(Agent):
@@ -48,7 +48,6 @@ class ActorCriticAgent(Agent):
             state = new_state
             action = next_action
 
-
         self.environment.reset()
         return G, sum(state), state_action_sequence
 
@@ -66,38 +65,7 @@ class ActorCriticAgent(Agent):
         return rewards, results, action_sequence
 
 
-if __name__ == '__main__':
-    from actor import Actor
-    from critic import Critic
-
-    actor = Actor()
-    critic = Critic()
-    agent = ActorCriticAgent(actor, critic)
-    rewards, num_pegs, actions = agent.play_many(EPISODES)
-
-    import matplotlib.pyplot as plt
-    import matplotlib
-
-    matplotlib.use("TkAgg")
-    # plt.plot(s)
-    # plt.show()
-
-    print(actor.epsilon)
-    counter = 0
-    value_count = {}
-    for value in actor.state_mapping.values():
-        for v in value.values():
-            if v in value_count.keys():
-                value_count[v] += 1
-            else:
-                value_count[v] = 1
-            counter += 1
-    # print(counter)
-    # print(max(value_count.keys()))
-    # actor.epsilon = 0
-    # s = agent.play_many(100, debug=True)
-    # fi
-    # plt.plot(list(value_count.keys()),list(value_count.values()))
+def plot_results(rewards, num_pegs, epsilons):
     fig, (ax1, ax2) = plt.subplots(2, 1)
     averages = []
     acc = 0
@@ -106,33 +74,47 @@ if __name__ == '__main__':
         averages.append(acc / i)
     ax1.plot(num_pegs)
     ax1.plot(averages)
-    ax1.plot(actor.epsilon_sequence)
+    ax1.plot(epsilons)
     ax2.plot(rewards)
     plt.show()
-    for (cstate, cvalue), (astate, avalue) in zip(critic.state_mapping.items(), actor.state_mapping.items()):
-        print("    ", cstate[:1], "     ")
-        print("   ", cstate[1:3]), "    "
-        print("  ", cstate[3:6], "    ", cvalue)
-        print(" ", cstate[6:10])
-        print("", cstate[10:15])
-    #
 
-    # for state, mapping in actor.state_mapping.items():
-    #     print("\nNew state")
-    #     print(state)
-    #     for (s, a), value in mapping.items():
-    #         print("Action:", a)
-    #         print("    ", state[:1], "     ")
-    #         print("   ", state[1:3]), "    "
-    #         print("  ", state[3:6], "    ", value)
-    #         print(" ", state[6:10])
-    #         print("", state[10:15])
-    # print("\nEligibilities")
-    # for state, value in critic.eligibilities.items():
-    #     print("    ", state[:1])
-    #     print("   ", state[1:3])
-    #     print("  ", state[3:6], "    ", value)
-    #     print(" ", state[6:10])
-    #     print("", state[10:15])
-    # # print(actor.state_mapping)
-    # print(actor.eligibilities)
+
+def pretty_print_critic_values(critic):
+    for state, value in critic.state_mapping.items():
+        print("    ", state[:1], "     ")
+        print("   ", state[1:3]), "    "
+        print("  ", state[3:6], "    ", value)
+        print(" ", state[6:10])
+        print("", state[10:15])
+
+
+def pretty_print_actor_saps(actor):
+    for state, mapping in actor.state_mapping.items():
+        print("\nNew state")
+        print(state)
+        for (s, a), value in mapping.items():
+            print("Action:", a)
+            print("    ", state[:1], "     ")
+            print("   ", state[1:3]), "    "
+            print("  ", state[3:6], "    ", value)
+            print(" ", state[6:10])
+            print("", state[10:15])
+
+
+if __name__ == '__main__':
+    from actor import Actor
+    from neural_critic import NeuralCritic, Critic
+    import matplotlib.pyplot as plt
+    import matplotlib
+
+    actor = Actor()
+    if USE_NN:
+        critic = NeuralCritic()
+    else:
+        critic = Critic()
+
+    agent = ActorCriticAgent(actor, critic)
+    rewards, num_pegs, actions = agent.play_many(EPISODES)
+
+    matplotlib.use("TkAgg")
+    plot_results(rewards, num_pegs, actor.epsilon_sequence)
