@@ -5,12 +5,16 @@ import matplotlib.pyplot as plt
 from actor import Actor
 from actor_critic_agent import ActorCriticAgent
 from critic import Critic
-from pivotals import BOARD, BOARD_SIZE, EMPTY_CELLS, FRAME_DELAY, EPISODES_BEFORE_VISUALIZATION
+from neural_critic import NeuralCritic
+from pivotals import FRAME_DELAY, EPISODES_BEFORE_VISUALIZATION, USE_NN
 
 matplotlib.use("TkAgg")
 
 actor = Actor()
-critic = Critic()
+if USE_NN:
+    critic = NeuralCritic()
+else:
+    critic = Critic()
 agent = ActorCriticAgent(actor, critic)
 
 rewards, results, _ = agent.play_many(EPISODES_BEFORE_VISUALIZATION)
