@@ -6,8 +6,6 @@ class Cell:
         self.pos = pos
         self.row = row
         self.column = column
-
-
         self.filled = True
         self.targeted = False
         self.jumped = False
@@ -40,7 +38,6 @@ class Cell:
 
     def __repr__(self):
         return f"<Cell {self.index}>"
-
 
 
 if __name__ == '__main__':

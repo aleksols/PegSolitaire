@@ -9,6 +9,8 @@ class Critic:
         self.eligibilities = {}
         self.random_init = 0.005
         self.delta = 0
+        self.td_errors = [self.delta]
+        self.predictions = []
 
     def V(self, state):
         if state not in self.state_mapping.keys():
@@ -19,6 +21,9 @@ class Critic:
         if state not in self.eligibilities.keys():
             self.eligibilities[state] = 0
         return self.eligibilities[state]
+
+    def reset_eligibilities(self):
+        self.eligibilities.clear()
 
     def update_eligibility(self, state):
         self.eligibilities[state] *= DISCOUNT_FACTOR_CRITIC * ELIGIBILITY_DECAY_CRITIC
@@ -31,3 +36,7 @@ class Critic:
 
     def update_delta(self, reward, state, new_state):
         self.delta = reward + DISCOUNT_FACTOR_CRITIC * self.V(new_state) - self.V(state)
+
+    def update(self, reward, state, new_state):
+        self.update_delta(reward, state, new_state)
+        self.set_eligibility(state, 1)

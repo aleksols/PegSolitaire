@@ -15,6 +15,7 @@ if USE_NN:
     critic = NeuralCritic()
 else:
     critic = Critic()
+print(critic)
 agent = ActorCriticAgent(actor, critic)
 
 rewards, results, _ = agent.play_many(EPISODES_BEFORE_VISUALIZATION)
@@ -26,8 +27,6 @@ reward, num_pegs, actions = agent.play_many(1)
 
 board = agent.environment
 
-# fig = plt.figure(figsize=(10, 10))
-# fig.figsize = (100, 100)
 fig, (board_ax, graph_ax) = plt.subplots(1, 2)
 fig.set_size_inches(12, 6)
 

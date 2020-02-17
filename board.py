@@ -73,9 +73,6 @@ class Board:
         elif self.finished:
             return 1
         return 0
-        # if sum(self.state) != 1:
-        #     return 0
-        # return 1
 
 
 

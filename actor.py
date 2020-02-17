@@ -34,7 +34,7 @@ class Actor:
 
     def update_policy(self, state, action, td_error):
         self.state_mapping[state][(state, action)] += LEARN_RATE_ACTOR * td_error * self.e(state, action)
-        self.normalize(state)
+        # self.normalize(state)
 
     def normalize(self, state):
         divider = sum([math.e ** v for v in self.state_mapping[state].values()])
@@ -85,14 +85,11 @@ class Actor:
         return action_func(state)
 
     def _choose_random(self, state):
-        # TODO use distributions
-        # self._distribution(state)
         if not self.state_mapping[state]:
             return None
         return random.choice(list(self.state_mapping[state].keys()))[1]
 
     def _choose_best(self, state):
-        # self._distribution(state)
         max_action = [None]
         max_value = float("-inf")
         for state, action in self.state_mapping[state].keys():

@@ -19,11 +19,9 @@ class NeuralCritic(Critic):
         self.model = self._create_model()
         plot_model(self.model, show_shapes=True)
         self.model.summary()
-        # self.print_weights()
         self.gradient_trainer = GradientTrainer(self.model, self.eligibilities)
         self.eligibilities = None
         self.reset_eligibilities()
-        # print(self.eligibilities)
         self.targets = []
         self.features = []
 
@@ -70,7 +68,7 @@ class NeuralCritic(Critic):
 
         print(self.model.trainable_weights)
 
-    def update_delta(self, reward, state, new_state):
+    def update(self, reward, state, new_state):
         s = np.asarray(state, dtype="float32")
         s = np.expand_dims(s, axis=0)
         # print("SSSS", s)
@@ -82,18 +80,14 @@ class NeuralCritic(Critic):
         self.delta = target - predicted
         self.targets.append(target)
         self.features.append(state)
-        # self.gradient_trainer.fit(s, self.targets)
+
         self.fit(s, target)
-        # self.delta = reward + DISCOUNT_FACTOR_CRITIC * self.V(new_state) - self.V(state)
-        # print(self.delta)
-        # self.td_errors.append(self.delta)
+
 
     def reset_eligibilities(self):
         self.eligibilities = []
         for weight in self.model.trainable_weights:
             self.eligibilities.append(tf.zeros_like(weight))
-            # print(weight.shape)
-            # print(self.eligibilities[-1].shape)
 
     def fit(self, state, target):
         params = self.model.trainable_variables
@@ -101,15 +95,11 @@ class NeuralCritic(Critic):
             predicted = self.model(state)
             loss = self.model.loss_functions[0](target, predicted)
 
-            # tape.watch(loss)
-            # print("Watched", tape.watched_variables())
             gradients = tape.gradient(loss, params)
-            # print(gradients)
-        updated_gradients = self._update_gradients2(gradients, predicted[0])
-        self.grad = updated_gradients
-        # print(params)
+
+        updated_gradients = self._update_gradients2(gradients)
+
         self.model.optimizer.apply_gradients(zip(updated_gradients, params))
-        # print(params)
 
 
     def _update_gradients(self, gradients, predicted):
@@ -141,41 +131,16 @@ class NeuralCritic(Critic):
         return updated_gradients
 
 
-    def _update_gradients2(self, gradients, predicted):
+    def _update_gradients2(self, gradients):
         updated_gradients = []
         decay = tf.convert_to_tensor(ELIGIBILITY_DECAY_CRITIC, dtype=tf.dtypes.float32)
         discount = tf.convert_to_tensor(DISCOUNT_FACTOR_CRITIC, dtype=tf.dtypes.float32)
-        for i, gradient in enumerate(gradients):
-            # update = tf.multiply(predicted, gradient)
-            #
-            tmp = tf.multiply(self.eligibilities[i], discount, decay)
-            self.eligibilities[i] = tf.add(tmp, gradient)
-            # print("Gradient,", gradient)
-            # print()
-            # print("Predicted", predicted)
-            # print()
-            # print("Update", update)
-            # # print(self.eligibilities[i])
-            # print("shapes")
-            # print(gradient.shape, self.eligibilities[i].shape)
-            updated_gradients.append(self.eligibilities[i])  # * self.delta * learn_rate)
 
-        # print("Updated")
-        # print(updated_gradients)
-        # for gradient, e, param in zip(updated_gradients, self.eligibilities, self.model.trainable_weights):
-        #     print(gradient.shape, e.shape, param.shape)
+        for i, gradient in enumerate(gradients):
+            update = self.eligibilities[i] * discount * decay
+            self.eligibilities[i] = update + gradient
+
+            updated_gradients.append(self.eligibilities[i])
+
         return updated_gradients
 
-
-
-# class NeuralCriticTorch(Critic):
-#
-#     def __init__(self):
-#         super().__init__()
-#         self.model = self._create_model()
-#
-#
-#     def _create_model(self):
-#         layers = [nn.Sigmoid()]
-#
-#

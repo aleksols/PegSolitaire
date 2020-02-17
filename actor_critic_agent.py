@@ -1,10 +1,9 @@
 from tqdm import tqdm
 
-from agent import Agent
 from pivotals import BOARD_SIZE, EMPTY_CELLS, BOARD, EPISODES, USE_NN
 
 
-class ActorCriticAgent(Agent):
+class ActorCriticAgent:
     def __init__(self, actor, critic):
         super().__init__()
         self.actor = actor
@@ -16,10 +15,12 @@ class ActorCriticAgent(Agent):
         G = 0
         state_action_sequence = []
         self.actor.eligibilities.clear()
-
+        self.critic.reset_eligibilities()
         state = self.environment.state
         self.actor.add_actions(state, self.environment.valid_actions)
         action = self.actor.action(state)
+
+        self.critic.predictions.append(self.critic.V(state))
         if action is None:
             finished = True
         while not finished:
@@ -32,9 +33,7 @@ class ActorCriticAgent(Agent):
 
             self.actor.set_elgibility(state, action, 1)
 
-            self.critic.update_delta(reward, state, new_state)
-            self.critic.set_eligibility(state, 1)
-
+            self.critic.update(reward, state, new_state)
             for s, a in state_action_sequence:
                 self.critic.update_value(s)
 
@@ -47,6 +46,7 @@ class ActorCriticAgent(Agent):
             state = new_state
             action = next_action
 
+        self.critic.td_errors.append(self.critic.delta)
         self.environment.reset()
         return G, sum(state), state_action_sequence
 
@@ -64,17 +64,29 @@ class ActorCriticAgent(Agent):
         return rewards, results, action_sequence
 
 
-def plot_results(rewards, num_pegs, epsilons):
+def plot_results(num_pegs, actor, critic):
+
     fig, (ax1, ax2) = plt.subplots(2, 1)
+    fig.set_size_inches(10, 5)
     averages = []
     acc = 0
     for i, elem in enumerate(num_pegs, 1):
         acc += elem
         averages.append(acc / i)
-    ax1.plot(num_pegs)
-    ax1.plot(averages)
-    ax1.plot(epsilons)
-    ax2.plot(rewards)
+    ax1.plot(num_pegs, label="num pegs")
+    ax1.plot(averages, label="average")
+    ax1.plot(actor.epsilon_sequence, label="epsilon")
+    ax1.plot([0]*len(critic.td_errors), "black")
+    ax2.plot(critic.td_errors, label="TD errors")
+    avg = []
+    acc = 0
+    for i, elem in enumerate(critic.td_errors, 1):
+        acc += elem
+        avg.append(acc / i)
+    ax2.plot(avg, label="average TD error")
+    ax2.plot([0]*len(critic.td_errors), "black")
+    ax1.legend()
+    ax2.legend()
     plt.show()
 
 
@@ -114,6 +126,7 @@ if __name__ == '__main__':
 
     agent = ActorCriticAgent(actor, critic)
     rewards, num_pegs, actions = agent.play_many(EPISODES)
-
+    # print(critic.grad)
     matplotlib.use("TkAgg")
-    plot_results(rewards, num_pegs, actor.epsilon_sequence)
+    print(actor.epsilon)
+    plot_results(num_pegs, actor, critic)
