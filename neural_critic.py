@@ -54,7 +54,7 @@ class NeuralCritic(Critic):
         with tf.GradientTape() as tape:
             predicted = self.model(state)
             loss = self.model.loss_functions[0](target, predicted)
-            gradients = tape.gradient(loss, params)
+            gradients = tape.gradient(loss, params)  # Note that these gradients are dL/dw and therefore contains delta
         updated_gradients = self._update_gradients(gradients)
 
         self.model.optimizer.apply_gradients(zip(updated_gradients, params))
